@@ -7,7 +7,7 @@ const path = require('path')
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const {v4: uuidV4} = require('uuid')
-const keys = require('./keys/index')
+// const keys = require('./keys/index')
 
 const hbs = exphbs.create({
     defaultLayout: 'main',
@@ -32,7 +32,7 @@ app.get('/:room', (req, res) => {
     res.render('room', {
         roomId: req.params.room,
         uri: keys.BASE_URL,
-        peerPort: keys.peerPort
+        // peerPort: keys.peerPort
     })
 })
 

@@ -1,10 +1,10 @@
 const videoGrid = document.getElementById('video-grid')
-const peerPort = videoGrid.dataset.port
+// const peerPort = videoGrid.dataset.port
 const ROOM_ID = videoGrid.dataset.roomid
 const socket = io('/')
 const myPeer = new Peer(undefined, {
     host: '/',
-    port: peerPort
+    port: '3001'
 })
 const myVideo = document.createElement('video')
 myVideo.muted = true
