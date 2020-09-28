@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 app.get('/:room', (req, res) => {
     res.render('room', {
         roomId: req.params.room,
-        uri: keys.BASE_URL,
+        // uri: keys.BASE_URL,
         // peerPort: keys.peerPort
     })
 })
