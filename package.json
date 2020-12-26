@@ -1,0 +1,34 @@
+{
+  "name": "serviceforcommunications",
+  "version": "1.0.0",
+  "description": "web service for communication",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "soket.io": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VVladislaVLL/serviceForCommunications.git"
+  },
+  "keywords": [
+    "nodejs",
+    "react",
+    "express",
+    "video-conference",
+    "fullstack"
+  ],
+  "author": "Siarhei Kharlanau <s.v.harlanov@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VVladislaVLL/serviceForCommunications/issues"
+  },
+  "homepage": "https://github.com/VVladislaVLL/serviceForCommunications#readme"
+}
