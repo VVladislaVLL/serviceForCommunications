@@ -2,8 +2,8 @@ const { body } = require('express-validator')
 
 exports.registerValidator = [
     body('email')
-        .isEmail().withMessage('Введите корректный email')
-        .normalizeEmail(),
+        .isEmail().withMessage('Введите корректный email'),
+        // .normalizeEmail(),
     body('password')
         .isLength({ min: 6, max: 56 }).withMessage('Пароль должен быть минимум 6 символов')
         .isAlphanumeric().withMessage('Пароль должен содержать буквы и цифры')

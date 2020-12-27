@@ -5,5 +5,6 @@ const upload = require('../middleware/upload')
 
 router.post('/register', upload.single('image'), registerValidator, controller.register)
 router.post('/login', controller.login)
+router.delete('/:id', controller.delete)
 
 module.exports = router

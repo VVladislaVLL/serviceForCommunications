@@ -1,9 +1,20 @@
 const bcrypt = require('bcryptjs')
+const nodemailer = require('nodemailer')
 const { validationResult } = require('express-validator')
 const User = require('../models/User')
 const createToken = require('../utils/createJWT')
 const { DEFAULT_SALT_ROUND } = require('../utils/config')
 const errorHandler = require('../utils/errorHandler')
+const { registration } = require('../utils/mail')
+
+const transport = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+        user: "805206ebdc01e5",
+        pass: "b2d1c1a150f9a0"
+    }
+})
 
 module.exports = {
     login: async function (req, res) {
@@ -60,10 +71,23 @@ module.exports = {
     
                 await user.save()
                 res.status(201).json(user)
+                await transport.sendMail(registration(email, user.hash))
             }
         } catch (e) {
             console.error(e)
             errorHandler(500, 'Internal Server Error', res)
+        }
+    },
+    delete: async function(req, res) {
+        try {
+            await User.deleteOne({ _id: req.params.id })
+            
+            res.status(200).json({
+                message: 'User were deleted'
+            })
+        } catch (e) {
+            console.error(e)
+            errorHandler(500, 'Internal Server error', res)
         }
     }
 }
