@@ -2,12 +2,13 @@
   "name": "serviceforcommunications",
   "version": "1.0.0",
   "description": "web service for communication",
-  "main": "server.js",
+  "main": "src/server.js",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "helmet": "^4.2.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "soket.io": "^0.0.1-security"
@@ -16,8 +17,8 @@
     "nodemon": "^2.0.6"
   },
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server.js"
+    "start": "node src/server",
+    "server": "nodemon src/server"
   },
   "repository": {
     "type": "git",
