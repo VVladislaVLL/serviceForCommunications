@@ -7,7 +7,9 @@ const authRoute = require('./routes/auth')
 app.use(express.json())
 app.use(helmet())
 
-app.use('/api/auth', authRoute)
+// app.use('/', )
+// app.use(isAuth)
+app.use('/auth', authRoute)
 
 
 module.exports = app
