@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const { validationResult } = require('express-validator')
 const User = require('../models/User')
@@ -61,14 +62,16 @@ module.exports = {
                 })
             } else {
                 const salt = await bcrypt.genSalt(+DEFAULT_SALT_ROUND)
+                const hash = await bcrypt.hash(Date.now().toString(), salt)
                 const hashPassword = await bcrypt.hash(password, salt)
                 const user = new User({ 
                     email, 
                     password: hashPassword, 
                     name,
-                    avatar: req.file ? req.file.path : ''
+                    avatar: req.file ? req.file.path : '',
+                    hash
                 })
-    
+
                 await user.save()
                 res.status(201).json(user)
                 await transport.sendMail(registration(email, user.hash))
@@ -88,6 +91,32 @@ module.exports = {
         } catch (e) {
             console.error(e)
             errorHandler(500, 'Internal Server error', res)
+        }
+    },
+    verify: async function(req, res) {
+        try {   
+            const hash = req.query.hash
+            if (!hash) {
+                return res.status(422).json({ 
+                    message: "Invalid hash" 
+                })
+            } else {
+                const user = await User.findOne({ hash })
+
+                if (!user) {
+                    return res.status(404).json({
+                        message: 'User not found'
+                    })
+                } 
+
+                user.confirmed = true
+                await user.save()
+                res.status(200).json({
+                    message: 'Аккаунт успешно подтвержден!'
+                })
+            }   
+        } catch (e) {
+            errorHandler(500, 'Internal Server Error', res)
         }
     }
 }
