@@ -1,6 +1,9 @@
 const app = require('./app')
-const PORT = process.env.PORT || 5000
+const connectToDB = require('./utils/connectToDB')
+const { PORT } = require('./utils/config')
 
-app.listen(PORT, () => {
-    console.log(`Server has been started on ${PORT} port`)
+connectToDB(() => {
+    app.listen(PORT, () => {
+        console.log(`Server has been started on ${PORT} port`)
+    })
 })

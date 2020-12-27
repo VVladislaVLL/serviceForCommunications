@@ -41,13 +41,13 @@ module.exports = {
                     message: 'User already exists'
                 })
             } else {
-                const salt = await bcrypt.genSalt(DEFAULT_SALT_ROUND)
+                const salt = await bcrypt.genSalt(+DEFAULT_SALT_ROUND)
                 const hashPassword = await bcrypt.hash(password, salt)
                 const user = new User({ 
                     email, 
                     password: hashPassword, 
                     name,
-                    avatar: file.path
+                    // avatar: file.path
                 })
     
                 await user.save()
