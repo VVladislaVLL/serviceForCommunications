@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs')
+const { validationResult } = require('express-validator')
 const User = require('../models/User')
 const createToken = require('../utils/createJWT')
 const { DEFAULT_SALT_ROUND } = require('../utils/config')
+const errorHandler = require('../utils/errorHandler')
 
 module.exports = {
     login: async function (req, res) {
@@ -29,9 +31,15 @@ module.exports = {
             }
         } catch (e) {
             console.error(e)
+            errorHandler(500, 'Internal Server Error', res)
         }
     },
     register: async function(req, res) {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return errorHandler(422, errors.array()[0].msg, res)
+        }
+
         try {
             const { email, password, name, file } = req.body
             const candidate = await User.findOne({ email })
@@ -55,6 +63,7 @@ module.exports = {
             }
         } catch (e) {
             console.error(e)
+            errorHandler(500, 'Internal Server Error', res)
         }
     }
 }
