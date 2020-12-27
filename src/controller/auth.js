@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs')
-const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const { validationResult } = require('express-validator')
 const User = require('../models/User')
@@ -24,16 +23,23 @@ module.exports = {
             const candidate = await User.findOne({ email })
             
             if (candidate) {
-                const areSame = await bcrypt.compare(password, candidate.password)
-                if (areSame) {
-                    const token = createToken(email, candidate._id)
-
-                    res.status(200).json({
-                        message: `Bearer ${token}`
-                    })
+                const confirmed = candidate.confirmed
+                if (confirmed) {
+                    const areSame = await bcrypt.compare(password, candidate.password)
+                    if (areSame) {
+                        const token = createToken(email, candidate._id)
+    
+                        res.status(200).json({
+                            message: `Bearer ${token}`
+                        })
+                    } else {
+                        res.status(401).json({
+                            message: 'Incorrect password'
+                        })
+                    }
                 } else {
-                    res.status(401).json({
-                        message: 'Incorrect password'
+                    res.status(400).json({
+                        message: 'Ваш аккаунт не подтвержден'
                     })
                 }
             } else {
