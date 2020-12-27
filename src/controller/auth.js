@@ -41,7 +41,7 @@ module.exports = {
         }
 
         try {
-            const { email, password, name, file } = req.body
+            const { email, password, name } = req.body
             const candidate = await User.findOne({ email })
     
             if (candidate) {
@@ -55,7 +55,7 @@ module.exports = {
                     email, 
                     password: hashPassword, 
                     name,
-                    // avatar: file.path
+                    avatar: req.file ? req.file.path : ''
                 })
     
                 await user.save()
