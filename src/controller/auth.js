@@ -13,7 +13,7 @@ module.exports = {
                 const areSame = await bcrypt.compare(password, candidate.password)
                 if (areSame) {
                     const token = createToken(email, candidate._id)
-                    
+
                     res.status(200).json({
                         message: `Bearer ${token}`
                     })
@@ -33,7 +33,7 @@ module.exports = {
     },
     register: async function(req, res) {
         try {
-            const { email, password } = req.body
+            const { email, password, name } = req.body
             const candidate = await User.findOne({ email })
     
             if (candidate) {
@@ -43,7 +43,7 @@ module.exports = {
             } else {
                 const salt = await bcrypt.genSalt(DEFAULT_SALT_ROUND)
                 const hashPassword = await bcrypt.hash(password, salt)
-                const user = new User({ email, password: hashPassword })
+                const user = new User({ email, password: hashPassword, name })
     
                 await user.save()
                 res.status(201).json(user)
