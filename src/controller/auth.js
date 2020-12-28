@@ -1,11 +1,10 @@
-const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const { validationResult } = require('express-validator')
 const User = require('../models/User')
 const createToken = require('../utils/createJWT')
-const { DEFAULT_SALT_ROUND } = require('../utils/config')
 const errorHandler = require('../utils/errorHandler')
+const { hash, compare } = require('../utils/hash')
 const { registration, reset } = require('../utils/mail')
 
 const transport = nodemailer.createTransport({
@@ -26,7 +25,7 @@ module.exports = {
             if (candidate) {
                 const confirmed = candidate.confirmed
                 if (confirmed) {
-                    const areSame = await bcrypt.compare(password, candidate.password)
+                    const areSame = await compare(password, candidate.password)
                     if (areSame) {
                         const token = createToken(email, candidate._id)
     
@@ -68,9 +67,8 @@ module.exports = {
                     message: 'User already exists'
                 })
             } else {
-                const salt = await bcrypt.genSalt(+DEFAULT_SALT_ROUND)
-                const hash = await bcrypt.hash(Date.now().toString(), salt)
-                const hashPassword = await bcrypt.hash(password, salt)
+                const hash = await hash(Date.now().toString())
+                const hashPassword = await hash(password) 
                 const user = new User({ 
                     email, 
                     password: hashPassword, 
@@ -190,8 +188,7 @@ module.exports = {
             })
 
             if (user) {
-                const salt = await bcrypt.genSalt(DEFAULT_SALT_ROUND)
-                user.password = await bcrypt.hash(req.body.password, salt)
+                user.password = await hash(password) 
                 user.hash = null
                 user.hashExp = null
                 
