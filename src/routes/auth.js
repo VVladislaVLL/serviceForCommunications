@@ -8,5 +8,7 @@ router.post('/register', upload.single('image'), registerValidator, controller.r
 router.post('/login', controller.login)
 router.delete('/:id', controller.delete)
 router.post('/reset', controller.reset)
+router.get('/reset', controller.resetPage)
+router.post('/password', controller.password)
 
 module.exports = router

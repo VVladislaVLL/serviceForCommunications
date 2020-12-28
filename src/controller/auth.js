@@ -154,9 +154,58 @@ module.exports = {
         }
     },
     resetPage: async function(req, res) {
-        
-    },
-    resetPassword: function (req, res) {
+        if (!req.query.hash) {
+            return res.status(400).json({
+                message: 'Bad request'
+            })
+        }
 
+        try {
+            const user = await User.find({
+                hash: req.query.hash,
+                hashExp: {$gt: Date.now()}
+            })
+
+            if (!user) {
+                res.status(400).json({
+                    message: 'Bad request'
+                })
+            } else {
+                res.status(200).json({
+                    message: 'Восстановите пароль',
+                    userId: user._id,
+                    hash: user.hash
+                })
+            }
+        } catch (e) {
+            errorHandler(500, 'Internal Server Error', res)
+        }
+    },
+    password: async function (req, res) {
+        try {
+            const user = await User.findOne({
+                _id: req.body.userId,
+                hash: req.body.hash,
+                hashExp: {$gt: Date.now()}
+            })
+
+            if (user) {
+                const salt = await bcrypt.genSalt(DEFAULT_SALT_ROUND)
+                user.password = await bcrypt.hash(req.body.password, salt)
+                user.hash = null
+                user.hashExp = null
+                
+                await user.save()
+                res.status(200).json({
+                    message: 'Пароль успешно изменён'
+                })
+            } else {
+                res.status().json({
+                    message: 'Время жизни истекло'
+                })
+            }
+        } catch (e) {
+            errorHandler(500, 'Internal Server Error', res)
+        }
     }
 }
