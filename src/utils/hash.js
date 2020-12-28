@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const { DEFAULT_SALT_ROUND } = require('./config')
 
 module.exports = {
-    hash: async function(data) {
+    hashData: async function(data) {
         const salt = await bcrypt.genSalt(+DEFAULT_SALT_ROUND)
         const hashData = await bcrypt.hash(data, salt)
     

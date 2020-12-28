@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator')
 const User = require('../models/User')
 const createToken = require('../utils/createJWT')
 const errorHandler = require('../utils/errorHandler')
-const { hash, compare } = require('../utils/hash')
+const { hashData, compare } = require('../utils/hash')
 const { registration, reset } = require('../utils/mail')
 
 const transport = nodemailer.createTransport({
@@ -67,8 +67,8 @@ module.exports = {
                     message: 'User already exists'
                 })
             } else {
-                const hash = await hash(Date.now().toString())
-                const hashPassword = await hash(password) 
+                const hash = await hashData(Date.now().toString())
+                const hashPassword = await hashData(password) 
                 const user = new User({ 
                     email, 
                     password: hashPassword, 
@@ -188,7 +188,7 @@ module.exports = {
             })
 
             if (user) {
-                user.password = await hash(password) 
+                user.password = await hashData(req.body.password) 
                 user.hash = null
                 user.hashExp = null
                 
