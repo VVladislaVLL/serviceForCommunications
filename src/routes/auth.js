@@ -7,5 +7,6 @@ router.get('/verify', controller.verify)
 router.post('/register', upload.single('image'), registerValidator, controller.register)
 router.post('/login', controller.login)
 router.delete('/:id', controller.delete)
+router.post('/reset', controller.reset)
 
 module.exports = router

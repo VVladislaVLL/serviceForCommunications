@@ -1,11 +1,12 @@
 const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const { validationResult } = require('express-validator')
 const User = require('../models/User')
 const createToken = require('../utils/createJWT')
 const { DEFAULT_SALT_ROUND } = require('../utils/config')
 const errorHandler = require('../utils/errorHandler')
-const { registration } = require('../utils/mail')
+const { registration, reset } = require('../utils/mail')
 
 const transport = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
@@ -96,7 +97,7 @@ module.exports = {
             })
         } catch (e) {
             console.error(e)
-            errorHandler(500, 'Internal Server error', res)
+            errorHandler(500, 'Internal Server Error', res)
         }
     },
     verify: async function(req, res) {
@@ -124,5 +125,38 @@ module.exports = {
         } catch (e) {
             errorHandler(500, 'Internal Server Error', res)
         }
+    },
+    reset: function(req, res) {
+        try {
+            crypto.randomBytes(32, async (err, buffer) => {
+                if (err) {
+                    return errorHandler(400, err, res)
+                }
+
+                const hash = buffer.toString('hex')
+                const candidate = await User.findOne({ email: req.body.email })
+                if (candidate) {
+                    candidate.hash = hash
+                    candidate.hashExp = Date.now() + 3600 * 1000
+                    await candidate.save()
+                    res.status(200).json({
+                        message: 'Письмо с восстановлением пароля отправлено вам на почту'
+                    })
+                    await transport.sendMail(reset(candidate.email, hash))
+                } else {
+                    res.status(404).json({
+                        message: 'Такого email не существует'
+                    })
+                }
+            })
+        } catch (e) {
+            errorHandler(500, 'Internal Server Error', res)
+        }
+    },
+    resetPage: async function(req, res) {
+        
+    },
+    resetPassword: function (req, res) {
+
     }
 }

@@ -18,9 +18,10 @@ const userSchema = new Schema({
         type: String,
         default: ''
     },
-    hash: {
-        type: String,
-        // required: true
+    hash: String,
+    hashExp: {
+        type: Date,
+        default: ''
     },
     confirmed: {
         type: Boolean,
