@@ -9,10 +9,10 @@ app.use(express.json())
 app.use(helmet())
 
 app.use('/auth', authRoute)
-app.use(isAuth)
 app.get('/', (req, res) => {
-    res.send('Service is working')
+    res.send('Happy New Year!')
 })
+app.use(isAuth)
 
 
 module.exports = app
