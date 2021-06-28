@@ -18,17 +18,22 @@ const transport = nodemailer.createTransport({
 
 module.exports = {
     login: async function (req, res) {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return errorHandler(422, errors.array()[0].msg, res)
+        }
+
         try {
             const { email, password } = req.body
             const candidate = await User.findOne({ email })
-            
+
             if (candidate) {
                 const confirmed = candidate.confirmed
                 if (confirmed) {
                     const areSame = await compare(password, candidate.password)
                     if (areSame) {
                         const token = createToken(email, candidate._id)
-    
+
                         res.status(200).json({
                             message: `Bearer ${token}`
                         })
@@ -61,17 +66,17 @@ module.exports = {
         try {
             const { email, password, name } = req.body
             const candidate = await User.findOne({ email })
-    
+
             if (candidate) {
                 res.status(409).json({
                     message: 'User already exists'
                 })
             } else {
                 const hash = await hashData(Date.now().toString())
-                const hashPassword = await hashData(password) 
-                const user = new User({ 
-                    email, 
-                    password: hashPassword, 
+                const hashPassword = await hashData(password)
+                const user = new User({
+                    email,
+                    password: hashPassword,
                     name,
                     avatar: req.file ? req.file.path : '',
                     hash
@@ -89,7 +94,7 @@ module.exports = {
     delete: async function(req, res) {
         try {
             await User.deleteOne({ _id: req.params.id })
-            
+
             res.status(200).json({
                 message: 'User were deleted'
             })
@@ -99,11 +104,11 @@ module.exports = {
         }
     },
     verify: async function(req, res) {
-        try {   
+        try {
             const hash = req.query.hash
             if (!hash) {
-                return res.status(422).json({ 
-                    message: "Invalid hash" 
+                return res.status(422).json({
+                    message: "Invalid hash"
                 })
             } else {
                 const user = await User.findOne({ hash })
@@ -112,14 +117,14 @@ module.exports = {
                     return res.status(404).json({
                         message: 'User not found'
                     })
-                } 
+                }
 
                 user.confirmed = true
                 await user.save()
                 res.status(200).json({
                     message: 'Аккаунт успешно подтвержден!'
                 })
-            }   
+            }
         } catch (e) {
             errorHandler(500, 'Internal Server Error', res)
         }
@@ -180,6 +185,11 @@ module.exports = {
         }
     },
     password: async function (req, res) {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return errorHandler(422, errors.array()[0].msg, res)
+        }
+
         try {
             const user = await User.findOne({
                 _id: req.body.userId,
@@ -188,10 +198,10 @@ module.exports = {
             })
 
             if (user) {
-                user.password = await hashData(req.body.password) 
+                user.password = await hashData(req.body.password)
                 user.hash = null
                 user.hashExp = null
-                
+
                 await user.save()
                 res.status(200).json({
                     message: 'Пароль успешно изменён'
